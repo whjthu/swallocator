@@ -1,0 +1,9 @@
+5 4096
+Testing CAllocator: 
+Time spend: 52.8918ms.
+Testing FreeListAllocator with Find_First: 
+Time spend: 71.1521ms.
+Testing FreeListAllocator with Find_Best: 
+Time spend: 115.66ms.
+Testing BlockAllocator: 
+Time spend: 56.4858ms.

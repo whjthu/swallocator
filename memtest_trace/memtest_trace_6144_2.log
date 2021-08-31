@@ -1,0 +1,4 @@
+Init trace trace_bgl_6144
+38759
+Simulate FreeList with Best:
+trace.out: FreeListAllocator.cpp:48: virtual void* FreeListAllocator::Allocate(size_t, size_t): Assertion `foundNode != nullptr && "No enough memory"' failed.
