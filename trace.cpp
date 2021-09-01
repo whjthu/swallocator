@@ -34,7 +34,6 @@ constexpr size_t MEMSIZE = ((size_t)100) << 30;
 #endif // LOCAL
 
 int memtest_seed;
-size_t memtest_size;
 
 inline double get_time() {
     struct timeval t;
@@ -46,6 +45,8 @@ struct memory_op {
     int type;
     size_t x;
     void *ptr;
+    size_t ptr_origin;
+    bool flag;
 };
 
 size_t cast_addr(const char *str) {
@@ -81,6 +82,8 @@ class Trace {
                 data[i].type = 0;
                 data[i].x = size;
                 data[i].ptr = NULL;
+                data[i].ptr_origin = cast_addr(str_ptr);
+                // std::cout << "[DEBUG] alloc: " << std::hex << data[i].ptr_origin << " " << data[i].x << std::endl;
             } else {
                 fin >> str_ptr;
                 if (mp.find(cast_addr(str_ptr)) == mp.end() || mp[cast_addr(str_ptr)] == -1) {
@@ -90,8 +93,9 @@ class Trace {
                 }
                 data[i].type = 1;
                 data[i].x = mp[cast_addr(str_ptr)];
-                data[i].ptr = NULL;
+                data[i].ptr_origin = cast_addr(str_ptr);
                 mp[cast_addr(str_ptr)] = -1;
+                // std::cout << "[DEBUG] free: " << data[i].ptr_origin << " " << data[data[i].x].x << std::endl;
             }
         }
     }
@@ -100,6 +104,7 @@ class Trace {
 void simTrace(Allocator *allocator, Trace &trace) {
     HC;
     RT(0);
+    std::cout << "[DEBUG] trace.n: " << trace.n << std::endl;
     for (int i = 0; i < trace.n; i++) {
         if (trace.data[i].type == 0) {
             trace.data[i].ptr = allocator->Allocate(trace.data[i].x);
@@ -115,13 +120,27 @@ void simTrace(Allocator *allocator, Trace &trace) {
 void simBATrace(BlockAllocator *allocator, Trace &trace) {
     HC;
     RT(0);
+    // std::cout << "[DEBUG] trace.n: " << trace.n << std::endl;
+    size_t used = 0;
     for (int i = 0; i < trace.n; i++) {
         if (trace.data[i].type == 0) {
             trace.data[i].ptr = allocator->Allocate(trace.data[i].x);
-            std::cout << trace.data[i].x << std::endl;
+            used += trace.data[i].x;
+            trace.data[i].flag = true;
+            // std::cout << "[DEBUG] alloc: " << trace.data[i].ptr << " " << trace.data[i].x << " " << used << std::endl;
         } else {
             allocator->Free(trace.data[trace.data[i].x].ptr);
+            used -= trace.data[trace.data[i].x].x;
+            trace.data[trace.data[i].x].flag = false;
+            // std::cout << "[DEBUG] free: " << trace.data[trace.data[i].x].ptr << " " << trace.data[trace.data[i].x].x << " " << used << std::endl;
         }
+    }
+
+    for (int i = 0; i < trace.n; i++) {
+        if (trace.data[i].type == 0 && trace.data[i].flag) {
+            // std::cout << "MEM: " << trace.data[i].ptr << " " << trace.data[i].x << " " << std::hex << trace.data[i].ptr_origin << std::endl;
+        }
+
     }
     RT(1);
     CT(t, 1, 0);
