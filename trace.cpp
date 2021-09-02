@@ -21,7 +21,7 @@ namespace chrono = std::chrono;
 #include <cstdlib>
 #include <iostream>
 
-constexpr size_t MEMSIZE = ((size_t)100) << 30;
+constexpr size_t MEMSIZE = ((size_t)78ul) << 30;
 
 #ifdef LOCAL
 #define HC chrono::high_resolution_clock hc
@@ -124,15 +124,15 @@ void simBATrace(BlockAllocator *allocator, Trace &trace) {
     size_t used = 0;
     for (int i = 0; i < trace.n; i++) {
         if (trace.data[i].type == 0) {
-            trace.data[i].ptr = allocator->Allocate(trace.data[i].x);
             used += trace.data[i].x;
             trace.data[i].flag = true;
             // std::cout << "[DEBUG] alloc: " << trace.data[i].ptr << " " << trace.data[i].x << " " << used << std::endl;
+            trace.data[i].ptr = allocator->Allocate(trace.data[i].x);
         } else {
-            allocator->Free(trace.data[trace.data[i].x].ptr);
             used -= trace.data[trace.data[i].x].x;
             trace.data[trace.data[i].x].flag = false;
             // std::cout << "[DEBUG] free: " << trace.data[trace.data[i].x].ptr << " " << trace.data[trace.data[i].x].x << " " << used << std::endl;
+            allocator->Free(trace.data[trace.data[i].x].ptr);
         }
     }
 
