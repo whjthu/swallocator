@@ -1,0 +1,4 @@
+*.out
+.vscode
+memtest_trace
+memtest_log
