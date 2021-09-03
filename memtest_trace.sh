@@ -1,8 +1,0 @@
-STASK_MALLOC_CROSS=1 bsub -b -akernel -cross -q q_test_ss -N 1 -np 1 -cgsp 64 -mpecg 6 -share_size 900 -cross_size 81000 -priv_size 2 -cache_size 0 -o memtest_trace/memtest_trace_3072_0.log ./trace.out trace_bgl_3072 0
-STASK_MALLOC_CROSS=1 bsub -b -akernel -cross -q q_test_ss -N 1 -np 1 -cgsp 64 -mpecg 6 -share_size 900 -cross_size 81000 -priv_size 2 -cache_size 0 -o memtest_trace/memtest_trace_3072_1.log ./trace.out trace_bgl_3072 1
-STASK_MALLOC_CROSS=1 bsub -b -akernel -cross -q q_test_ss -N 1 -np 1 -cgsp 64 -mpecg 6 -share_size 900 -cross_size 81000 -priv_size 2 -cache_size 0 -o memtest_trace/memtest_trace_3072_2.log ./trace.out trace_bgl_3072 2
-STASK_MALLOC_CROSS=1 bsub -b -akernel -cross -q q_test_ss -N 1 -np 1 -cgsp 64 -mpecg 6 -share_size 900 -cross_size 81000 -priv_size 2 -cache_size 0 -o memtest_trace/memtest_trace_3072_3.log ./trace.out trace_bgl_3072 3
-STASK_MALLOC_CROSS=1 bsub -b -akernel -cross -q q_test_ss -N 1 -np 1 -cgsp 64 -mpecg 6 -share_size 900 -cross_size 81000 -priv_size 2 -cache_size 0 -o memtest_trace/memtest_trace_6144_0.log ./trace.out trace_bgl_6144 0
-STASK_MALLOC_CROSS=1 bsub -b -akernel -cross -q q_test_ss -N 1 -np 1 -cgsp 64 -mpecg 6 -share_size 900 -cross_size 81000 -priv_size 2 -cache_size 0 -o memtest_trace/memtest_trace_6144_1.log ./trace.out trace_bgl_6144 1
-STASK_MALLOC_CROSS=1 bsub -b -akernel -cross -q q_test_ss -N 1 -np 1 -cgsp 64 -mpecg 6 -share_size 900 -cross_size 81000 -priv_size 2 -cache_size 0 -o memtest_trace/memtest_trace_6144_2.log ./trace.out trace_bgl_6144 2
-STASK_MALLOC_CROSS=1 bsub -b -akernel -cross -q q_test_ss -N 1 -np 1 -cgsp 64 -mpecg 6 -share_size 900 -cross_size 81000 -priv_size 2 -cache_size 0 -o memtest_trace/memtest_trace_6144_3.log ./trace.out trace_bgl_6144 3
