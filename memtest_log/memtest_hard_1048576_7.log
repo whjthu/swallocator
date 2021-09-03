@@ -1,9 +1,0 @@
-7 1048576
-Testing CAllocator: 
-Time spend: 134542ms.
-Testing FreeListAllocator with Find_First: 
-Time spend: 158453ms.
-Testing FreeListAllocator with Find_Best: 
-Time spend: 225892ms.
-Testing BlockAllocator: 
-Time spend: 11218.1ms.
