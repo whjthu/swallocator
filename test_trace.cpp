@@ -114,5 +114,12 @@ int main(int argc, char *argv[]) {
         sim_trace(block_allocator, trace);
     }
 
+    if (type == 4) {
+        BlockAllocator *block_allocator = new BlockAllocator(MEMSIZE);
+        block_allocator->flag_malloc = false;
+        std::cout << "Block without malloc:" << std::endl;
+        sim_trace(block_allocator, trace);
+    }
+
     return 0;
 }

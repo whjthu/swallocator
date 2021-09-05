@@ -89,7 +89,6 @@ void *BlockAllocator::Allocate(const size_t size, size_t alignment) {
         std::cout << "Allocate: " << size << "B memory using malloc"
                   << std::endl;
 #endif // _DEBUG
-        std::cout << "using malloc ";
         auto p = malloc(size);
         if (p == nullptr) {
             std::cout << "Malloc failed" << std::endl;

@@ -34,18 +34,32 @@ void test(Allocator *allocator) {
 
 void test(BlockAllocator *allocator) {
     for (int i = 2; i < 28; ++i) {
-        double t0 = get_time();
-        void *ptr = allocator->Allocate(1 << i);
-        double t1 = get_time();
-        float *fptr = (float *)ptr;
-        for (int j = 0; j < i; j += 1 << (i - 2)) {
-            fptr[j] = j;
+        for (int j = 0; j < 128; j++) {
+            void *ptr = allocator->Allocate(1 << i);
+            float *fptr = (float *)ptr;
+            for (int j = 0; j < i; j += 1 << (i - 2)) {
+                fptr[j] = j;
+            }
+            allocator->Free(ptr);
         }
-        double t2 = get_time();
-        allocator->Free(ptr);
-        double t3 = get_time();
-        std::cout << "size: " << (1 << i) << ", alloc: " << t1 - t0 << "ms, "
-                  << " free: " << t3 - t2 << "ms." << std::endl;
+        double time_alloc = 0, time_free = 0;
+        for (int j = 0; j < 128; j++) {
+            double t0 = get_time();
+            void *ptr = allocator->Allocate(1 << i);
+            double t1 = get_time();
+            float *fptr = (float *)ptr;
+            for (int j = 0; j < i; j += 1 << (i - 2)) {
+                fptr[j] = j;
+            }
+            double t2 = get_time();
+            allocator->Free(ptr);
+            double t3 = get_time();
+            time_alloc += t1 - t0;
+            time_free += t3 - t2;
+        }
+        std::cout << "size: " << (1 << i) << ", alloc: " << time_alloc / 128
+                  << "ms, "
+                  << " free: " << time_free / 128 << "ms." << std::endl;
     }
 }
 
