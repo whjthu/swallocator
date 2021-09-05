@@ -188,6 +188,56 @@ def draw_malloc_size():
 
 # draw_malloc_size()
 
+def draw_malloc():
+    dat_alloc_x86 = [0.000976562, 0, 0, 0, 0, 0, 0, 0, 0.00805664, 0, 0, 0.00390625, 0.00488281, 0.00390625, 0.00512695, 0.0090332, 0.00610352, 0.00610352, 0.00488281, 0.0090332, 0.0090332, 0.00805664, 0.0078125, 0.00708008, 0.00805664, 0.0078125]
+    dat_alloc_sw = [0.00390625, 0.000976562, 0.000976562, 0.00195312, 0.000976562, 0.000976562, 0.000976562, 0.000976562, 0.00292969, 0.000976562, 0.00195312, 0.000976562, 0.000976562, 0.000976562, 0.000976562, 0.000976562, 0.000976562, 0.000976562, 0.748047, 1.3728, 2.68115, 5.30298, 10.5801, 21.3091, 42.438, 84.4351]
+
+    # dat_free_x86 = [0.00195312, 0, 0, 0, 0.000976562, 0.000976562, 0.000976562, 0.000976562, 0, 0, 0, 0, 0, 0, 0, 0.0109863, 0.00585938, 0.00390625, 0.00415039, 0.0100098, 0.0129395, 0.00708008, 0.00708008, 0.00683594, 0.00708008, 0.00805664]
+    # dat_free_sw = [0.0012207, 0.0012207, 0.000976562, 0, 0, 0.00195312, 0.000976562, 0, 0.000976562, 0.00195312, 0.000976562, 0.000976562, 0.000976562, 0, 0, 0, 0.000976562, 0, 0.0939941, 0.136963, 0.276855, 0.454102, 0.878174, 1.78198, 4.46094, 8.78101]
+    dat_size = [4 * 2 ** x for x in range(26)]
+    # dat = [dat_alloc_x86, dat_alloc_sw, dat_free_x86, dat_free_sw]
+    dat = [dat_alloc_x86, dat_alloc_sw]
+    num_bars, num_types = len(dat[0]), len(dat)
+
+    sz, fontsz = (10, 5), 10
+    figsz = {
+        'axes.labelsize': fontsz,
+        'font.size': fontsz,
+        'legend.fontsize': fontsz,
+        'xtick.labelsize': fontsz,
+        'ytick.labelsize': fontsz,
+        'figure.figsize': sz,
+    }
+    figsz = {'figure.figsize': sz}
+    
+    plt.rcParams.update(figsz)
+
+    fig, ax = plt.subplots()
+    color_vec = color_def
+    hatch_vec = [None] * num_bars
+
+    width, ggap, lgap = 0.35, 0.35, [0, 0.1, 0]
+    for i in range(num_bars):
+        for j in range(num_types):
+            ax.bar((width * num_types + ggap) * i + width * j + width / 2,
+                dat[j][i], width, color=color_vec[j], hatch=hatch_vec[j], edgecolor='black')
+    ax.set_xticks([(width * num_types + ggap) * i + width*num_types/2 for i in range(num_bars)])
+    ax.set_xticklabels([str(2**x)+"B" for x in range(2, 10)] + [str(2**x)+"KB" for x in range(10)] + [str(2**x)+"MB" for x in range(8)], rotation=60, fontsize=12)
+    ax.set_xlim(0, (width * num_types + ggap) * num_bars - ggap)
+    # ax.set_yscale('log')
+    ax.set_ylabel("Time (ms)")
+    ax.set_ylim(0, 100)
+    types = ['x86', 'sw']
+    num_type = len(types)
+    legend_handles = [mpatches.Patch(
+        facecolor=color_vec[i], edgecolor='black', hatch=hatch_vec[i], label=types[i]) for i in range(num_type)]
+    plt.legend(handles=legend_handles)
+
+    # fig.show()
+    fig.savefig(dirbase + 'malloc.pdf', bbox_inches='tight')
+
+draw_malloc()
+
 def draw_malloc_random_test():
     dat_malloc = []
     dat_swalloc = []
