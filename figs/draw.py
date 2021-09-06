@@ -22,7 +22,7 @@ sz, fontsz = (6, 3), 16
 figsz = {
     'axes.labelsize': fontsz,
     'font.size': fontsz,
-    'legend.fontsize': fontsz,
+    'legend.fontsize': 14,
     'xtick.labelsize': fontsz,
     'ytick.labelsize': fontsz,
     'figure.figsize': sz,
@@ -32,9 +32,9 @@ plt.rcParams.update(figsz)
 hb = '\\\\//\\\\//'
 
 color_def = [
-    '#f4b183',
     '#ffd966',
     '#c5e0b4',
+    '#f4b183',
     '#bdd7ee',
     "#8dd3c7",
     "#bebada",
@@ -376,31 +376,18 @@ def draw_malloc_parsec_test():
 
 
 def draw_malloc_bgl_test():
-    dat_malloc = []
-    dat_falloc_first = []
-    dat_falloc_best = []
-    dat_swalloc = []
-    dat_swalloc_single = []
+    dat_malloc = [438277, 412169, 438277 + 5602.28, 412169 + 4708.18]
+    dat_falloc_first = [111.131, 7.70801, 111.131 + 5602.28, 7.70801 + 4708.18]
+    dat_falloc_best = [305.559, 16.9231, 305.559 + 5602.28, 16.9231 + 4708.18]
+    dat_swalloc = [19.2852, 5.43481, 19.2852 + 5602.28, 5.43481 + 4708.18]
+    dat_swalloc_single = [28.5229, 10.9951, 28.5229 + 5602.28, 10.9951 + 4708.18]
     dat = [dat_malloc, dat_falloc_first, dat_falloc_best, dat_swalloc, dat_swalloc_single]
-    dat_size = [3072, 6144]
-    for type in range(5):
-        for size in dat_size:
-            filename = 'memtest_log/bgl_%s.%d.log' % (size, type)
-            with open(filename) as fin:
-                lines = fin.readlines()
-                if len(lines) < 3:
-                    dat[type].append(0)
-                    continue
-                assert(lines[1].startswith('Time init'))
-                assert(lines[2].startswith('Time trace'))
-                t_init = float(lines[1].split(':')[1].strip().split()[0])
-                t_trace = float(lines[2].split(':')[1].strip().split()[0])
-                t_total = t_init + t_trace
-                dat[type].append(t_total)
-    # print(dat)
 
-    dat = [dat[0], dat[2], dat[4], dat[3]]
+    dat = np.array([dat[0], dat[2], dat[4], dat[3]]) / 5
     num_bars, num_types = len(dat[0]), len(dat)
+    for i in range(num_types):
+        for j in range(num_bars):
+            dat[i][j] = math.log(dat[i][j], 10)
 
     sz, fontsz = (10, 5), 10
     figsz = {
@@ -417,27 +404,31 @@ def draw_malloc_bgl_test():
 
     fig, ax = plt.subplots()
     color_vec = color_def
-    hatch_vec = [None] * num_types
+    hatch_vec = [None] * (num_types-1) + [hatch_def[0]]
 
-    width, ggap, lgap = 0.35, 0.5, [0.05, 0.05, 0.05]
+    width, ggap, lgap = 0.35, 0.5, 0.1
     for i in range(num_bars):
         for j in range(num_types):
-            ax.bar((width * num_types + ggap) * i + width * j + (sum(lgap[:j])),
+            ax.bar(ggap + ((width + lgap) * num_types + ggap - lgap) * i + (width + lgap) * j + width / 2,
                 dat[j][i], width, color=color_vec[j], hatch=hatch_vec[j], edgecolor='black')
-    ax.set_yscale('log')
-    ax.set_xticks([(width * num_types + ggap) * i + (width*3/2 + lgap[1]/2)
+    # ax.set_yscale('log')
+    ax.set_xlim(0, ((width + lgap) * num_types - lgap + ggap) * num_bars + ggap)
+    ax.set_xticks([ggap + ((width + lgap) * num_types - lgap + ggap) * i + ((width + lgap) * num_types - lgap) / 2
                    for i in range(num_bars)])
-    ax.set_xticklabels([s for s in dat_size], fontsize=12)
+    ax.set_xticklabels(["BGL-Alloc 3072", "BGL-Alloc 6144", "BGL 3072", "BGL 6144"], fontsize=12)
     ax.set_ylabel("Time (ms)")
-    # ax.set_ylim(0, 300)
+    ax.set_ylim(0, 6)
+    ax.set_yticks(range(7))
+    ax.set_yticklabels(["1", "10", "100", "1K", "10K", "100K", "1M"])
+    ax.vlines(ymin=0, ymax = 6, x = (((width + lgap) * num_types - lgap + ggap) * num_bars + ggap) / 2, colors = "black")
     types = ['malloc', 'freelist', 'swalloc_single', 'swalloc']
     num_type = len(types)
     legend_handles = [mpatches.Patch(
         facecolor=color_vec[i], edgecolor='black', hatch=hatch_vec[i], label=types[i]) for i in range(num_type)]
-    plt.legend(handles=legend_handles)
+    plt.legend(handles=legend_handles, ncol=4, loc="upper center", bbox_to_anchor=(0.5, 1.15))
 
     plt.show()
     fig.savefig(dirbase + 'bgl_test.pdf', bbox_inches='tight')
 
 
-# draw_malloc_bgl_test()
+draw_malloc_bgl_test()
