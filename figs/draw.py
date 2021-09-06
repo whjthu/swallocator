@@ -22,7 +22,7 @@ sz, fontsz = (6, 3), 16
 figsz = {
     'axes.labelsize': fontsz,
     'font.size': fontsz,
-    'legend.fontsize': 14,
+    'legend.fontsize': fontsz,
     'xtick.labelsize': fontsz,
     'ytick.labelsize': fontsz,
     'figure.figsize': sz,
@@ -389,7 +389,7 @@ def draw_malloc_bgl_test():
         for j in range(num_bars):
             dat[i][j] = math.log(dat[i][j], 10)
 
-    sz, fontsz = (10, 5), 10
+    sz, fontsz = (10, 4), 10
     figsz = {
         'axes.labelsize': fontsz,
         'font.size': fontsz,
@@ -419,13 +419,13 @@ def draw_malloc_bgl_test():
     ax.set_ylabel("Time (ms)")
     ax.set_ylim(0, 6)
     ax.set_yticks(range(7))
-    ax.set_yticklabels(["1", "10", "100", "1K", "10K", "100K", "1M"])
-    ax.vlines(ymin=0, ymax = 6, x = (((width + lgap) * num_types - lgap + ggap) * num_bars + ggap) / 2, colors = "black")
+    ax.set_yticklabels("$10^" + str(x) + "$" for x in range(7))
+    ax.vlines(ymin=0, ymax = 6, x = (((width + lgap) * num_types - lgap + ggap) * num_bars + ggap) / 2, colors = "black", linewidth=1)
     types = ['malloc', 'freelist', 'swalloc_single', 'swalloc']
     num_type = len(types)
     legend_handles = [mpatches.Patch(
         facecolor=color_vec[i], edgecolor='black', hatch=hatch_vec[i], label=types[i]) for i in range(num_type)]
-    plt.legend(handles=legend_handles, ncol=4, loc="upper center", bbox_to_anchor=(0.5, 1.15))
+    plt.legend(handles=legend_handles, ncol=4, loc="upper center", bbox_to_anchor=(0.5, 1.2))
 
     plt.show()
     fig.savefig(dirbase + 'bgl_test.pdf', bbox_inches='tight')
