@@ -20,6 +20,7 @@ ourSys = 'APE'
 
 sz, fontsz = (6, 3), 16
 figsz = {
+    'font.family': 'simhei',
     'axes.labelsize': fontsz,
     'font.size': fontsz,
     'legend.fontsize': fontsz,
@@ -189,9 +190,9 @@ def draw_malloc_size(ty):
 # draw_malloc_size(0)
 # draw_malloc_size(1)
 
-def draw_malloc():
-    dat_alloc_x86 = [0.000976562, 0, 0, 0, 0, 0, 0, 0, 0.00805664, 0, 0, 0.00390625, 0.00488281, 0.00390625, 0.00512695, 0.0090332, 0.00610352, 0.00610352, 0.00488281, 0.0090332, 0.0090332, 0.00805664, 0.0078125, 0.00708008, 0.00805664, 0.0078125]
-    dat_alloc_sw = [0.00390625, 0.000976562, 0.000976562, 0.00195312, 0.000976562, 0.000976562, 0.000976562, 0.000976562, 0.00292969, 0.000976562, 0.00195312, 0.000976562, 0.000976562, 0.000976562, 0.000976562, 0.000976562, 0.000976562, 0.000976562, 0.748047, 1.3728, 2.68115, 5.30298, 10.5801, 21.3091, 42.438, 84.4351]
+def draw_arch_malloc():
+    dat_alloc_x86 = [0.0000915527, 0.000087738, 0.0000915527, 0.0000858307, 0.0000934601, 0.000116348, 0.000123978, 0.000101089, 0.0000915527, 0.0000839233, 0.000116348, 0.0000934601, 0.000110626, 0.0000915527, 0.000108719, 0.0000858307, 0.000106812, 0.000106812, 0.000106812, 0.000101089, 0.0000991821, 0.000110626, 0.000114441, 0.00747299, 0.0074234, 0.00723839]
+    dat_alloc_sw = [0.000476837, 0.00066185, 0.000469208, 0.000455856, 0.000471115, 0.000577927, 0.000600815, 0.000583649, 0.000591278, 0.000413895, 0.000480652, 0.000473022, 0.000465393, 0.000488281, 0.000486374, 0.000465393, 0.000453949, 0.000488281, 0.000505447, 0.000509262, 0.000482559, 0.000492096, 0.000484467, 21.2865, 42.4472, 84.8605]
 
     # dat_free_x86 = [0.00195312, 0, 0, 0, 0.000976562, 0.000976562, 0.000976562, 0.000976562, 0, 0, 0, 0, 0, 0, 0, 0.0109863, 0.00585938, 0.00390625, 0.00415039, 0.0100098, 0.0129395, 0.00708008, 0.00708008, 0.00683594, 0.00708008, 0.00805664]
     # dat_free_sw = [0.0012207, 0.0012207, 0.000976562, 0, 0, 0.00195312, 0.000976562, 0, 0.000976562, 0.00195312, 0.000976562, 0.000976562, 0.000976562, 0, 0, 0, 0.000976562, 0, 0.0939941, 0.136963, 0.276855, 0.454102, 0.878174, 1.78198, 4.46094, 8.78101]
@@ -220,13 +221,13 @@ def draw_malloc():
     width, ggap, lgap = 0.35, 0.35, [0, 0.1, 0]
     for i in range(num_bars):
         for j in range(num_types):
-            ax.bar((width * num_types + ggap) * i + width * j + width / 2,
+            ax.bar(ggap + (width * num_types + ggap) * i + width * j + width / 2,
                 dat[j][i], width, color=color_vec[j], hatch=hatch_vec[j], edgecolor='black')
-    ax.set_xticks([(width * num_types + ggap) * i + width*num_types/2 for i in range(num_bars)])
+    ax.set_xticks([ggap + (width * num_types + ggap) * i + width*num_types/2 for i in range(num_bars)])
     ax.set_xticklabels([str(2**x)+"B" for x in range(2, 10)] + [str(2**x)+"KB" for x in range(10)] + [str(2**x)+"MB" for x in range(8)], rotation=60, fontsize=12)
-    ax.set_xlim(0, (width * num_types + ggap) * num_bars - ggap)
+    ax.set_xlim(0, (width * num_types + ggap) * num_bars + ggap)
     ax.set_yscale('log')
-    ax.set_ylabel("Time (ms)")
+    ax.set_ylabel("时间 (ms)")
     ax.set_ylim(0, 100)
     # ax.set_yticks([0.01, 0.1, 1, 10, 100])
     types = ['x86', 'sw']
@@ -236,9 +237,9 @@ def draw_malloc():
     plt.legend(handles=legend_handles)
 
     # fig.show()
-    fig.savefig(dirbase + 'malloc.pdf', bbox_inches='tight')
+    fig.savefig(dirbase + 'arch_malloc.pdf', bbox_inches='tight')
 
-# draw_malloc()
+draw_arch_malloc()
 
 def draw_malloc_random_test():
     dat_malloc = []
@@ -305,7 +306,7 @@ def draw_malloc_random_test():
     fig.savefig(dirbase + 'random_test.pdf', bbox_inches='tight')
 
 
-draw_malloc_random_test()
+# draw_malloc_random_test()
 
 def draw_malloc_parsec_test():
     dat_malloc = []
@@ -431,4 +432,4 @@ def draw_malloc_bgl_test():
     fig.savefig(dirbase + 'bgl_test.pdf', bbox_inches='tight')
 
 
-draw_malloc_bgl_test()
+# draw_malloc_bgl_test()
