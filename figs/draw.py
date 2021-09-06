@@ -112,7 +112,7 @@ def test_color(color_vec=color_def, hatch_vec=hatch_def, marker_def=marker_def, 
 # test_color(color_def, hatch_def)
 
 
-def draw_malloc_size():
+def draw_malloc_size(ty):
     dat_malloc = []
     dat_swalloc = []
     dat_free = []
@@ -120,16 +120,16 @@ def draw_malloc_size():
     dat_size = []
     infile = 'memtest_log/size.log'
     state = ''
-    with open(infile) as f:
-        lines = f.readlines()
+    with open(infile) as fin:
+        lines = fin.readlines()
         for l in lines:
-            if l.startswith('Testing malloc'):
+            if l.startswith('Testing CAllocator'):
                 state = 'malloc'
             elif l.startswith('Testing BlockAllocator'):
                 state = 'swalloc'
             elif l.startswith('Testing'):
                 state = ''
-            if l.startswith('Allocate size'):
+            if l.startswith('size'):
                 (size_str, alloc_str, free_str) = l.split(',')
                 alloc_size = int(size_str.split()[-1])
                 alloc_time = float(alloc_str.split()[-1][:-2])
@@ -141,12 +141,12 @@ def draw_malloc_size():
                 if state == 'swalloc':
                     dat_swalloc.append(alloc_time)
                     dat_swfree.append(free_time)
-    # print(dat_size)
-    # print(dat_malloc)
-    # print(dat_free)
-    # print(dat_swalloc)
-    # print(dat_swfree)
-    dat = [dat_malloc, dat_free, dat_swalloc, dat_swfree]
+    print(dat_size)
+    print(dat_malloc)
+    print(dat_free)
+    print(dat_swalloc)
+    print(dat_swfree)
+    dat = [dat_malloc, dat_swalloc] if ty == 0 else [dat_free, dat_swfree]
     num_bars, num_types = len(dat[0]), len(dat)
 
     sz, fontsz = (10, 5), 10
@@ -164,7 +164,7 @@ def draw_malloc_size():
 
     fig, ax = plt.subplots()
     color_vec = color_def
-    hatch_vec = [None] * num_bars
+    hatch_vec = [None] * num_types
 
     width, ggap, lgap = 0.35, 0.35, [0, 0.1, 0]
     for i in range(num_bars):
@@ -177,16 +177,17 @@ def draw_malloc_size():
     ax.set_xticklabels(['2^'+str(int(math.log(s,2))) for s in dat_size], rotation=60, fontsize=12)
     ax.set_ylabel("Time (ms)")
     # ax.set_ylim(0, 300)
-    types = ['malloc', 'free', 'swalloc', 'swfree']
+    types = ['malloc', 'swalloc'] if ty == 0 else ['free', 'swfree']
     num_type = len(types)
     legend_handles = [mpatches.Patch(
         facecolor=color_vec[i], edgecolor='black', hatch=hatch_vec[i], label=types[i]) for i in range(num_type)]
     plt.legend(handles=legend_handles)
 
     plt.show()
-    fig.savefig(dirbase + 'malloc_size.pdf', bbox_inches='tight')
+    fig.savefig(dirbase + ('malloc' if ty == 0 else 'free') + '_size.pdf', bbox_inches='tight')
 
-# draw_malloc_size()
+# draw_malloc_size(0)
+# draw_malloc_size(1)
 
 def draw_malloc():
     dat_alloc_x86 = [0.000976562, 0, 0, 0, 0, 0, 0, 0, 0.00805664, 0, 0, 0.00390625, 0.00488281, 0.00390625, 0.00512695, 0.0090332, 0.00610352, 0.00610352, 0.00488281, 0.0090332, 0.0090332, 0.00805664, 0.0078125, 0.00708008, 0.00805664, 0.0078125]
@@ -262,7 +263,7 @@ def draw_malloc_random_test():
                 dat[type].append(t_total)
     # print(dat)
 
-    dat = [dat[0], dat[2], dat[3], dat[4]]
+    dat = [dat[0], dat[2], dat[4], dat[3]]
     num_bars, num_types = len(dat[0]), len(dat)
 
     sz, fontsz = (10, 5), 10
@@ -282,7 +283,7 @@ def draw_malloc_random_test():
     color_vec = color_def
     hatch_vec = [None] * num_bars
 
-    width, ggap, lgap = 0.35, 0.35, [0, 0.1, 0]
+    width, ggap, lgap = 0.35, 0.35, [0.05, 0.05, 0.05]
     for i in range(num_bars):
         for j in range(num_types):
             ax.bar((width * num_types + ggap) * i + width * j + (sum(lgap[:j])),
@@ -290,10 +291,11 @@ def draw_malloc_random_test():
     ax.set_yscale('log')
     ax.set_xticks([(width * num_types + ggap) * i + (width*3/2 + lgap[1]/2)
                    for i in range(num_bars)])
-    ax.set_xticklabels(['2^'+str(int(math.log(s,2))) for s in dat_num], rotation=60, fontsize=12)
+    ax.set_xticklabels(['2^'+str(int(math.log(s,2))) for s in dat_num],  fontsize=12)
     ax.set_ylabel("Time (ms)")
+    ax.set_xlabel('Testing length')
     # ax.set_ylim(0, 300)
-    types = ['malloc', 'freelist', 'swalloc', 'swalloc_single']
+    types = ['malloc', 'freelist', 'swalloc_single', 'swalloc']
     num_type = len(types)
     legend_handles = [mpatches.Patch(
         facecolor=color_vec[i], edgecolor='black', hatch=hatch_vec[i], label=types[i]) for i in range(num_type)]
@@ -303,7 +305,7 @@ def draw_malloc_random_test():
     fig.savefig(dirbase + 'random_test.pdf', bbox_inches='tight')
 
 
-# draw_malloc_random_test()
+draw_malloc_random_test()
 
 def draw_malloc_parsec_test():
     dat_malloc = []
@@ -329,7 +331,7 @@ def draw_malloc_parsec_test():
                 dat[type].append(t_total)
     # print(dat)
 
-    dat = [dat[0], dat[2], dat[3], dat[4]]
+    dat = [dat[0], dat[2], dat[4], dat[3]]
     num_bars, num_types = len(dat[0]), len(dat)
 
     sz, fontsz = (10, 5), 10
@@ -349,7 +351,7 @@ def draw_malloc_parsec_test():
     color_vec = color_def
     hatch_vec = [None] * num_bars
 
-    width, ggap, lgap = 0.35, 0.35, [0, 0.1, 0]
+    width, ggap, lgap = 0.35, 0.35, [0,0,0]
     for i in range(num_bars):
         for j in range(num_types):
             ax.bar((width * num_types + ggap) * i + width * j + (sum(lgap[:j])),
@@ -357,14 +359,14 @@ def draw_malloc_parsec_test():
     ax.set_yscale('log')
     ax.set_xticks([(width * num_types + ggap) * i + (width*3/2 + lgap[1]/2)
                    for i in range(num_bars)])
-    ax.set_xticklabels([prog for prog in dat_prog], rotation=60, fontsize=12)
+    ax.set_xticklabels([prog for prog in dat_prog], rotation=30, fontsize=12)
     ax.set_ylabel("Time (ms)")
     # ax.set_ylim(0, 300)
-    types = ['malloc', 'freelist', 'swalloc', 'swalloc_single']
+    types = ['malloc', 'freelist', 'swalloc_single', 'swalloc']
     num_type = len(types)
     legend_handles = [mpatches.Patch(
         facecolor=color_vec[i], edgecolor='black', hatch=hatch_vec[i], label=types[i]) for i in range(num_type)]
-    plt.legend(handles=legend_handles)
+    plt.legend(handles=legend_handles, bbox_to_anchor=(0.46, 1), loc='upper center')
 
     plt.show()
     fig.savefig(dirbase + 'parsec_test.pdf', bbox_inches='tight')
@@ -397,7 +399,7 @@ def draw_malloc_bgl_test():
                 dat[type].append(t_total)
     # print(dat)
 
-    dat = [dat[0], dat[2], dat[3], dat[4]]
+    dat = [dat[0], dat[2], dat[4], dat[3]]
     num_bars, num_types = len(dat[0]), len(dat)
 
     sz, fontsz = (10, 5), 10
@@ -417,7 +419,7 @@ def draw_malloc_bgl_test():
     color_vec = color_def
     hatch_vec = [None] * num_types
 
-    width, ggap, lgap = 0.35, 0.35, [0, 0.1, 0]
+    width, ggap, lgap = 0.35, 0.5, [0.05, 0.05, 0.05]
     for i in range(num_bars):
         for j in range(num_types):
             ax.bar((width * num_types + ggap) * i + width * j + (sum(lgap[:j])),
@@ -425,10 +427,10 @@ def draw_malloc_bgl_test():
     ax.set_yscale('log')
     ax.set_xticks([(width * num_types + ggap) * i + (width*3/2 + lgap[1]/2)
                    for i in range(num_bars)])
-    ax.set_xticklabels([s for s in dat_size], rotation=60, fontsize=12)
+    ax.set_xticklabels([s for s in dat_size], fontsize=12)
     ax.set_ylabel("Time (ms)")
     # ax.set_ylim(0, 300)
-    types = ['malloc', 'freelist', 'swalloc', 'swalloc_single']
+    types = ['malloc', 'freelist', 'swalloc_single', 'swalloc']
     num_type = len(types)
     legend_handles = [mpatches.Patch(
         facecolor=color_vec[i], edgecolor='black', hatch=hatch_vec[i], label=types[i]) for i in range(num_type)]
@@ -438,4 +440,4 @@ def draw_malloc_bgl_test():
     fig.savefig(dirbase + 'bgl_test.pdf', bbox_inches='tight')
 
 
-draw_malloc_bgl_test()
+# draw_malloc_bgl_test()
