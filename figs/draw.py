@@ -224,9 +224,10 @@ def draw_malloc():
     ax.set_xticks([(width * num_types + ggap) * i + width*num_types/2 for i in range(num_bars)])
     ax.set_xticklabels([str(2**x)+"B" for x in range(2, 10)] + [str(2**x)+"KB" for x in range(10)] + [str(2**x)+"MB" for x in range(8)], rotation=60, fontsize=12)
     ax.set_xlim(0, (width * num_types + ggap) * num_bars - ggap)
-    # ax.set_yscale('log')
+    ax.set_yscale('log')
     ax.set_ylabel("Time (ms)")
     ax.set_ylim(0, 100)
+    # ax.set_yticks([0.01, 0.1, 1, 10, 100])
     types = ['x86', 'sw']
     num_type = len(types)
     legend_handles = [mpatches.Patch(
@@ -236,9 +237,205 @@ def draw_malloc():
     # fig.show()
     fig.savefig(dirbase + 'malloc.pdf', bbox_inches='tight')
 
-draw_malloc()
+# draw_malloc()
 
 def draw_malloc_random_test():
     dat_malloc = []
+    dat_falloc_first = []
+    dat_falloc_best = []
     dat_swalloc = []
-    pass
+    dat_swalloc_single = []
+    dat = [dat_malloc, dat_falloc_first, dat_falloc_best, dat_swalloc, dat_swalloc_single]
+    dat_size = ['1M', '2M', '4M', '8M']
+    dat_num = [256, 512, 1024, 2048, 4096, 8192, 16384]
+    sz = dat_size[3]
+    for type in range(5):
+        for num in dat_num:
+            filename = 'memtest_log/rand_%s_%d.%d.log' % (sz, num, type)
+            with open(filename) as fin:
+                lines = fin.readlines()
+                assert(lines[1].startswith('Time init'))
+                assert(lines[2].startswith('Time trace'))
+                t_init = float(lines[1].split(':')[1].strip().split()[0])
+                t_trace = float(lines[2].split(':')[1].strip().split()[0])
+                t_total = t_init + t_trace
+                dat[type].append(t_total)
+    # print(dat)
+
+    dat = [dat[0], dat[2], dat[3], dat[4]]
+    num_bars, num_types = len(dat[0]), len(dat)
+
+    sz, fontsz = (10, 5), 10
+    figsz = {
+        'axes.labelsize': fontsz,
+        'font.size': fontsz,
+        'legend.fontsize': fontsz,
+        'xtick.labelsize': fontsz,
+        'ytick.labelsize': fontsz,
+        'figure.figsize': sz,
+    }
+    figsz = {'figure.figsize': sz}
+    
+    plt.rcParams.update(figsz)
+
+    fig, ax = plt.subplots()
+    color_vec = color_def
+    hatch_vec = [None] * num_bars
+
+    width, ggap, lgap = 0.35, 0.35, [0, 0.1, 0]
+    for i in range(num_bars):
+        for j in range(num_types):
+            ax.bar((width * num_types + ggap) * i + width * j + (sum(lgap[:j])),
+                dat[j][i], width, color=color_vec[j], hatch=hatch_vec[j], edgecolor='black')
+    ax.set_yscale('log')
+    ax.set_xticks([(width * num_types + ggap) * i + (width*3/2 + lgap[1]/2)
+                   for i in range(num_bars)])
+    ax.set_xticklabels(['2^'+str(int(math.log(s,2))) for s in dat_num], rotation=60, fontsize=12)
+    ax.set_ylabel("Time (ms)")
+    # ax.set_ylim(0, 300)
+    types = ['malloc', 'freelist', 'swalloc', 'swalloc_single']
+    num_type = len(types)
+    legend_handles = [mpatches.Patch(
+        facecolor=color_vec[i], edgecolor='black', hatch=hatch_vec[i], label=types[i]) for i in range(num_type)]
+    plt.legend(handles=legend_handles)
+
+    plt.show()
+    fig.savefig(dirbase + 'random_test.pdf', bbox_inches='tight')
+
+
+# draw_malloc_random_test()
+
+def draw_malloc_parsec_test():
+    dat_malloc = []
+    dat_falloc_first = []
+    dat_falloc_best = []
+    dat_swalloc = []
+    dat_swalloc_single = []
+    dat = [dat_malloc, dat_falloc_first, dat_falloc_best, dat_swalloc, dat_swalloc_single]
+    dat_prog = ['blackscholes', 'bodytrack', 'canneal', 'dedup', 'facesim', 'ferret', 'fluidanimate', 'freqmine', 'raytrace', 'streamcluster', 'swaptions', 'vips', 'x264']
+    for type in range(5):
+        for prog in dat_prog:
+            filename = 'memtest_log/%s.%d.log' % (prog, type)
+            with open(filename) as fin:
+                lines = fin.readlines()
+                if len(lines) < 3:
+                    dat[type].append(0)
+                    continue
+                assert(lines[1].startswith('Time init'))
+                assert(lines[2].startswith('Time trace'))
+                t_init = float(lines[1].split(':')[1].strip().split()[0])
+                t_trace = float(lines[2].split(':')[1].strip().split()[0])
+                t_total = t_init + t_trace
+                dat[type].append(t_total)
+    # print(dat)
+
+    dat = [dat[0], dat[2], dat[3], dat[4]]
+    num_bars, num_types = len(dat[0]), len(dat)
+
+    sz, fontsz = (10, 5), 10
+    figsz = {
+        'axes.labelsize': fontsz,
+        'font.size': fontsz,
+        'legend.fontsize': fontsz,
+        'xtick.labelsize': fontsz,
+        'ytick.labelsize': fontsz,
+        'figure.figsize': sz,
+    }
+    figsz = {'figure.figsize': sz}
+    
+    plt.rcParams.update(figsz)
+
+    fig, ax = plt.subplots()
+    color_vec = color_def
+    hatch_vec = [None] * num_bars
+
+    width, ggap, lgap = 0.35, 0.35, [0, 0.1, 0]
+    for i in range(num_bars):
+        for j in range(num_types):
+            ax.bar((width * num_types + ggap) * i + width * j + (sum(lgap[:j])),
+                dat[j][i], width, color=color_vec[j], hatch=hatch_vec[j], edgecolor='black')
+    ax.set_yscale('log')
+    ax.set_xticks([(width * num_types + ggap) * i + (width*3/2 + lgap[1]/2)
+                   for i in range(num_bars)])
+    ax.set_xticklabels([prog for prog in dat_prog], rotation=60, fontsize=12)
+    ax.set_ylabel("Time (ms)")
+    # ax.set_ylim(0, 300)
+    types = ['malloc', 'freelist', 'swalloc', 'swalloc_single']
+    num_type = len(types)
+    legend_handles = [mpatches.Patch(
+        facecolor=color_vec[i], edgecolor='black', hatch=hatch_vec[i], label=types[i]) for i in range(num_type)]
+    plt.legend(handles=legend_handles)
+
+    plt.show()
+    fig.savefig(dirbase + 'parsec_test.pdf', bbox_inches='tight')
+
+
+# draw_malloc_parsec_test()
+
+
+def draw_malloc_bgl_test():
+    dat_malloc = []
+    dat_falloc_first = []
+    dat_falloc_best = []
+    dat_swalloc = []
+    dat_swalloc_single = []
+    dat = [dat_malloc, dat_falloc_first, dat_falloc_best, dat_swalloc, dat_swalloc_single]
+    dat_size = [3072, 6144]
+    for type in range(5):
+        for size in dat_size:
+            filename = 'memtest_log/bgl_%s.%d.log' % (size, type)
+            with open(filename) as fin:
+                lines = fin.readlines()
+                if len(lines) < 3:
+                    dat[type].append(0)
+                    continue
+                assert(lines[1].startswith('Time init'))
+                assert(lines[2].startswith('Time trace'))
+                t_init = float(lines[1].split(':')[1].strip().split()[0])
+                t_trace = float(lines[2].split(':')[1].strip().split()[0])
+                t_total = t_init + t_trace
+                dat[type].append(t_total)
+    # print(dat)
+
+    dat = [dat[0], dat[2], dat[3], dat[4]]
+    num_bars, num_types = len(dat[0]), len(dat)
+
+    sz, fontsz = (10, 5), 10
+    figsz = {
+        'axes.labelsize': fontsz,
+        'font.size': fontsz,
+        'legend.fontsize': fontsz,
+        'xtick.labelsize': fontsz,
+        'ytick.labelsize': fontsz,
+        'figure.figsize': sz,
+    }
+    figsz = {'figure.figsize': sz}
+    
+    plt.rcParams.update(figsz)
+
+    fig, ax = plt.subplots()
+    color_vec = color_def
+    hatch_vec = [None] * num_types
+
+    width, ggap, lgap = 0.35, 0.35, [0, 0.1, 0]
+    for i in range(num_bars):
+        for j in range(num_types):
+            ax.bar((width * num_types + ggap) * i + width * j + (sum(lgap[:j])),
+                dat[j][i], width, color=color_vec[j], hatch=hatch_vec[j], edgecolor='black')
+    ax.set_yscale('log')
+    ax.set_xticks([(width * num_types + ggap) * i + (width*3/2 + lgap[1]/2)
+                   for i in range(num_bars)])
+    ax.set_xticklabels([s for s in dat_size], rotation=60, fontsize=12)
+    ax.set_ylabel("Time (ms)")
+    # ax.set_ylim(0, 300)
+    types = ['malloc', 'freelist', 'swalloc', 'swalloc_single']
+    num_type = len(types)
+    legend_handles = [mpatches.Patch(
+        facecolor=color_vec[i], edgecolor='black', hatch=hatch_vec[i], label=types[i]) for i in range(num_type)]
+    plt.legend(handles=legend_handles)
+
+    plt.show()
+    fig.savefig(dirbase + 'bgl_test.pdf', bbox_inches='tight')
+
+
+draw_malloc_bgl_test()
