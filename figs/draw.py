@@ -132,7 +132,7 @@ def draw_malloc_size(ty):
     dat = np.log10(dat) + 4
     num_bars, num_types = len(dat[0]), len(dat)
 
-    sz, fontsz = (10, 4), 10
+    sz, fontsz = (10, 4), 14
     figsz = {
         'axes.labelsize': fontsz,
         'font.size': fontsz,
@@ -141,7 +141,7 @@ def draw_malloc_size(ty):
         'ytick.labelsize': fontsz,
         'figure.figsize': sz,
     }
-    figsz = {'figure.figsize': sz}
+    # figsz = {'figure.figsize': sz}
     
     plt.rcParams.update(figsz)
 
@@ -155,7 +155,7 @@ def draw_malloc_size(ty):
             ax.bar(ggap + (width * num_types + ggap) * i + width * j + width / 2,
                 dat[j][i], width, color=color_vec[j], hatch=hatch_vec[j], edgecolor='black')
     ax.set_xticks([ggap + (width * num_types + ggap) * i + width*num_types/2 for i in range(num_bars)])
-    ax.set_xticklabels([str(2**x)+"B" for x in range(2, 10)] + [str(2**x)+"KB" for x in range(10)] + [str(2**x)+"MB" for x in range(8)], rotation=60, fontsize=12)
+    ax.set_xticklabels([str(2**x)+"B" for x in range(2, 10)] + [str(2**x)+"KB" for x in range(10)] + [str(2**x)+"MB" for x in range(8)], rotation=60)
     ax.set_xlim(0, (width * num_types + ggap) * num_bars + ggap)
     ax.set_xlabel("分配长度")
     # ax.set_yscale('log')
@@ -176,8 +176,8 @@ def draw_malloc_size(ty):
     # plt.show()
     fig.savefig(dirbase + ('malloc' if ty == 0 else 'free') + '_size.pdf', bbox_inches='tight')
 
-draw_malloc_size(0)
-draw_malloc_size(1)
+# draw_malloc_size(0)
+# draw_malloc_size(1)
 
 def draw_arch_malloc():
     dat_alloc_x86 = [0.0000915527, 0.000087738, 0.0000915527, 0.0000858307, 0.0000934601, 0.000116348, 0.000123978, 0.000101089, 0.0000915527, 0.0000839233, 0.000116348, 0.0000934601, 0.000110626, 0.0000915527, 0.000108719, 0.0000858307, 0.000106812, 0.000106812, 0.000106812, 0.000101089, 0.0000991821, 0.000110626, 0.000114441, 0.00747299, 0.0074234, 0.00723839]
@@ -192,7 +192,7 @@ def draw_arch_malloc():
     dat = np.log10(dat) + 5
     num_bars, num_types = len(dat[0]), len(dat)
 
-    sz, fontsz = (10, 4), 10
+    sz, fontsz = (10, 4), 14
     figsz = {
         'axes.labelsize': fontsz,
         'font.size': fontsz,
@@ -201,7 +201,6 @@ def draw_arch_malloc():
         'ytick.labelsize': fontsz,
         'figure.figsize': sz,
     }
-    figsz = {'figure.figsize': sz}
     
     plt.rcParams.update(figsz)
 
@@ -215,8 +214,9 @@ def draw_arch_malloc():
             ax.bar(ggap + (width * num_types + ggap) * i + width * j + width / 2,
                 dat[j][i], width, color=color_vec[j], hatch=hatch_vec[j], edgecolor='black')
     ax.set_xticks([ggap + (width * num_types + ggap) * i + width*num_types/2 for i in range(num_bars)])
-    ax.set_xticklabels([str(2**x)+"B" for x in range(2, 10)] + [str(2**x)+"KB" for x in range(10)] + [str(2**x)+"MB" for x in range(8)], rotation=60, fontsize=12)
+    ax.set_xticklabels([str(2**x)+"B" for x in range(2, 10)] + [str(2**x)+"KB" for x in range(10)] + [str(2**x)+"MB" for x in range(8)], rotation=60)
     ax.set_xlim(0, (width * num_types + ggap) * num_bars + ggap)
+    ax.set_xlabel('分配长度')
     # ax.set_yscale('log')
     ax.set_ylabel("时间 (ms)")
     ax.set_ylim(0, 8)
@@ -231,7 +231,7 @@ def draw_arch_malloc():
     # fig.show()
     fig.savefig(dirbase + 'arch_malloc.pdf', bbox_inches='tight')
 
-draw_arch_malloc()
+# draw_arch_malloc()
 
 def draw_malloc_random_test():
     dat_malloc = [2353.0, 3394.22, 5433.57, 9767.84, 18965.2, 33735.9, 61336.9]
@@ -243,7 +243,7 @@ def draw_malloc_random_test():
     dat = np.log10(dat) - 2
     num_bars, num_types = len(dat[0]), len(dat)
 
-    sz, fontsz = (10, 4), 10
+    sz, fontsz = (10, 4), 14
     figsz = {
         'axes.labelsize': fontsz,
         'font.size': fontsz,
@@ -252,7 +252,6 @@ def draw_malloc_random_test():
         'ytick.labelsize': fontsz,
         'figure.figsize': sz,
     }
-    figsz = {'figure.figsize': sz}
     
     plt.rcParams.update(figsz)
 
@@ -271,14 +270,14 @@ def draw_malloc_random_test():
     # ax.set_yscale('log')
     ax.set_xticks(xticks_fig)
     # ax.set_xticks([(width * num_types + ggap) * i + (width*3/2 + lgap[1]/2) for i in range(num_bars)])
-    ax.set_xticklabels([256 * 2 ** x for x in range(7)],  fontsize=12)
+    ax.set_xticklabels([256 * 2 ** x for x in range(7)])
     ax.set_ylabel("时间 (ms)")
     ax.set_xlabel('驻留内存数量')
     ax.set_ylim(0, 4)
     ax.set_yticks(range(5))
     ax.set_yticklabels(["$10^{" + str(x+2) + "}$" for x in range(5)])
     # ax.set_ylim(0, 300)
-    types = ['malloc', 'freelist', 'swalloc_single', 'swalloc']
+    types = ['malloc', 'FreeList', 'SWAlloc-S', 'SWAlloc']
     num_type = len(types)
     legend_handles = [mpatches.Patch(
         facecolor=color_vec[i], edgecolor='black', hatch=hatch_vec[i], label=types[i]) for i in range(num_type)]
@@ -301,7 +300,7 @@ def draw_malloc_parsec_test():
     dat = np.log10(dat)
     num_bars, num_types = len(dat[0]), len(dat)
 
-    sz, fontsz = (10, 3), 10
+    sz, fontsz = (10, 3), 14
     figsz = {
         'axes.labelsize': fontsz,
         'font.size': fontsz,
@@ -310,7 +309,6 @@ def draw_malloc_parsec_test():
         'ytick.labelsize': fontsz,
         'figure.figsize': sz,
     }
-    figsz = {'figure.figsize': sz}
     
     plt.rcParams.update(figsz)
 
@@ -330,14 +328,14 @@ def draw_malloc_parsec_test():
 
     ax.set_xlim(0, width_fig)
     ax.set_xticks(xticks_fig)
-    ax.set_xticklabels([prog for prog in dat_prog], rotation=30, fontsize=12)
+    ax.set_xticklabels([prog for prog in dat_prog], rotation=30)
     ax.set_ylabel("时间 (ms)")
     ax.set_xlabel('测试程序')
     ax.set_ylim(0, 6)
     ax.set_yticks(range(7))
     ax.set_yticklabels(["$10^{" + str(x) + "}$" for x in range(7)])
     # ax.set_ylim(0, 300)
-    types = ['malloc', 'freelist', 'swalloc_single', 'swalloc']
+    types = ['malloc', 'FreeList', 'SWAlloc-S', 'SWAlloc']
     num_type = len(types)
     legend_handles = [mpatches.Patch(
         facecolor=color_vec[i], edgecolor='black', hatch=hatch_vec[i], label=types[i]) for i in range(num_type)]
@@ -362,7 +360,7 @@ def draw_malloc_bgl_test():
     dat_fig1 = np.log10(np.array([dat_malloc, dat_falloc_best, dat_swalloc_single, dat_swalloc]) / 5)
     dat_fig2 = np.log10(np.array([dat_malloc_e2e, dat_swalloc_e2e]) / 5)
 
-    sz, fontsz = (10, 4), 10
+    sz, fontsz = (10, 4), 14
     figsz = {
         'axes.labelsize': fontsz,
         'font.size': fontsz,
@@ -371,7 +369,6 @@ def draw_malloc_bgl_test():
         'ytick.labelsize': fontsz,
         'figure.figsize': sz,
     }
-    figsz = {'figure.figsize': sz}
     
     plt.rcParams.update(figsz)
 
@@ -411,13 +408,14 @@ def draw_malloc_bgl_test():
     # ax.set_xlim(0, ((width + lgap) * num_types - lgap + ggap) * num_bars + ggap)
     # ax.set_xticks([ggap + ((width + lgap) * num_types - lgap + ggap) * i + ((width + lgap) * num_types - lgap) / 2
     #                for i in range(num_bars)])
-    ax.set_xticklabels(["BGL-Alloc 3072", "BGL-Alloc 6144", "BGL 3072", "BGL 6144"], fontsize=12)
-    ax.set_ylabel("Time (ms)")
+    ax.set_xticklabels(["BGL-Alloc 3072", "BGL-Alloc 6144", "BGL 3072", "BGL 6144"])
+    ax.set_ylabel("时间 (ms)")
+    ax.set_xlabel("             内存分配时间                                               端到端运行时间")
     ax.set_ylim(0, 6)
     ax.set_yticks(range(7))
     ax.set_yticklabels("$10^" + str(x) + "$" for x in range(7))
     ax.vlines(ymin=0, ymax = 6, x = width_fig1, colors = "black", linewidth=1)
-    types = ['malloc', 'freelist', 'swalloc_single', 'swalloc']
+    types = ['malloc', 'FreeList', 'SWAlloc-S', 'SWAlloc']
     num_type = len(types)
     legend_handles = [mpatches.Patch(
         facecolor=color_vec[i], edgecolor='black', hatch=hatch_vec[i], label=types[i]) for i in range(num_type)]
@@ -427,4 +425,4 @@ def draw_malloc_bgl_test():
     fig.savefig(dirbase + 'bgl_test.pdf', bbox_inches='tight')
 
 
-# draw_malloc_bgl_test()
+draw_malloc_bgl_test()
