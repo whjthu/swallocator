@@ -288,7 +288,7 @@ def draw_malloc_random_test():
     fig.savefig(dirbase + 'random_test.pdf', bbox_inches='tight')
 
 
-# draw_malloc_random_test()
+draw_malloc_random_test()
 
 def draw_malloc_parsec_test():
     dat_malloc = [11.1821, 23.8899, 4437.13, 1286.14, 48.3999, 118.26, 7.823, 636.968, 1071.3, 16.1309, 520.781, 130.97, 7.81494]
@@ -343,11 +343,11 @@ def draw_malloc_parsec_test():
         facecolor=color_vec[i], edgecolor='black', hatch=hatch_vec[i], label=types[i]) for i in range(num_type)]
     plt.legend(handles=legend_handles, bbox_to_anchor=(0.5, 1.25), loc='upper center', ncol=4)
 
-    plt.show()
+    # plt.show()
     fig.savefig(dirbase + 'parsec_test.pdf', bbox_inches='tight')
 
 
-# draw_malloc_parsec_test()
+draw_malloc_parsec_test()
 
 
 def draw_malloc_bgl_test():
@@ -427,4 +427,4 @@ def draw_malloc_bgl_test():
     fig.savefig(dirbase + 'bgl_test.pdf', bbox_inches='tight')
 
 
-# draw_malloc_bgl_test()
+draw_malloc_bgl_test()
