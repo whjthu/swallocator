@@ -23,6 +23,9 @@ void sim_trace(Allocator *allocator, mem_trace &trace) {
         if (trace.ops[i].type == 0) {
             auto &op = trace.ops[i];
             addr[op.idx] = allocator->Allocate(op.size);
+            for (int i = 0; i < op.size/4; ++i) {
+                ((int*)addr[op.idx])[i] = i;
+            }
         } else {
             auto &op = trace.ops[i];
             allocator->Free(addr[op.idx]);
@@ -33,6 +36,9 @@ void sim_trace(Allocator *allocator, mem_trace &trace) {
         if (trace.ops[i].type == 0) {
             auto &op = trace.ops[i];
             addr[op.idx] = allocator->Allocate(op.size);
+            for (int i = 0; i < op.size/4; ++i) {
+                ((int*)addr[op.idx])[i] = i;
+            }
         } else {
             auto &op = trace.ops[i];
             allocator->Free(addr[op.idx]);
@@ -50,6 +56,9 @@ void sim_trace(BlockAllocator *allocator, mem_trace &trace) {
         if (trace.ops[i].type == 0) {
             auto &op = trace.ops[i];
             addr[op.idx] = allocator->Allocate(op.size);
+            for (int i = 0; i < op.size/4; ++i) {
+                ((int*)addr[op.idx])[i] = i;
+            }
         } else {
             auto &op = trace.ops[i];
             allocator->Free(addr[op.idx]);
@@ -60,6 +69,9 @@ void sim_trace(BlockAllocator *allocator, mem_trace &trace) {
         if (trace.ops[i].type == 0) {
             auto &op = trace.ops[i];
             addr[op.idx] = allocator->Allocate(op.size);
+            for (int i = 0; i < op.size/4; ++i) {
+                ((int*)addr[op.idx])[i] = i;
+            }
         } else {
             auto &op = trace.ops[i];
             allocator->Free(addr[op.idx]);
